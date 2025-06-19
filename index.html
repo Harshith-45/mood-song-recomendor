@@ -1,0 +1,38 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mood-Based Song Recommender</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Mood-Based Song Recommender</h1>
+    <form id="moodForm">
+      <textarea name="journal" placeholder="How are you feeling today?" required></textarea>
+      <button type="submit">Get Recommendations</button>
+    </form>
+    <div id="result" class="result-box"></div>
+  </div>
+
+  <script>
+    document.getElementById('moodForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      fetch('/recommend', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        const box = document.getElementById('result');
+        box.innerHTML = `<h2>Mood detected: ${data.mood}</h2>`;
+        data.songs.forEach(song => {
+          box.innerHTML += `<p><a href=\"${song.url}\" target=\"_blank\">🎵 ${song.title}</a></p>`;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
